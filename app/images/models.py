@@ -18,13 +18,20 @@ class Size(models.Model):
 
 
 class Tier(models.Model):
+    name = models.CharField(max_length=25)
     sizes = models.ManyToManyField(Size, related_name='tiers')
     original = models.BooleanField(default=False)
     temporary_link = models.BooleanField(default=False, null=True)
 
+    def __str__(self):
+        return self.name
+
 
 class User(AbstractUser):
     tier = models.ForeignKey(Tier, on_delete=models.deletion.SET_NULL, related_name='users', null=True)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
 
 
 class Image(models.Model):

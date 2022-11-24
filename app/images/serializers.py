@@ -19,7 +19,7 @@ class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
         fields = ['id', 'original_image', 'thumbnails']
-        read_only_fields = ('id',)
+        extra_kwargs = {'original_image': {'write_only': True}, 'id': {'read_only': True}}
 
     def get_thumbnails(self, obj):
         request = self.context['request']
@@ -31,11 +31,11 @@ class ImageSerializer(serializers.ModelSerializer):
                 request.build_absolute_uri(thumbnailer.get_thumbnail({'size': (0, int(size))}).url)
         return thumbnails_response
 
-    # def get_fields(self):
-    #     fields = super().get_fields()
-    #     if not self.context['request'].user.tier.original:
-    #         fields.pop('original_image')
-    #     return fields
+    def get_extra_kwargs(self):
+        extra_kwargs = super().get_extra_kwargs()
+        if self.context['request'].user.tier.original:
+            extra_kwargs.pop('original_image')
+        return extra_kwargs
 
 
 class BinaryImageSerializer(serializers.ModelSerializer):

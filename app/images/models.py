@@ -16,6 +16,9 @@ def image_file_path(instance, filename):
 class Size(models.Model):
     size_px = models.IntegerField(default=200)
 
+    def __str__(self):
+        return str(self.size_px)
+
 
 class Tier(models.Model):
     name = models.CharField(max_length=25)

@@ -1,6 +1,7 @@
 from rest_framework import viewsets, mixins, views, status
 from . import serializers
 from .models import Image, TemporaryLinkModel
+from .permissions import TempLinkUser
 from rest_framework.response import Response
 from datetime import datetime
 from django.shortcuts import redirect
@@ -31,6 +32,7 @@ class BinaryImage(mixins.RetrieveModelMixin,
 
 
 class TempLinkGenerate(views.APIView):
+    permission_classes = [TempLinkUser]
 
     def get(self, request):
         return Response(None)

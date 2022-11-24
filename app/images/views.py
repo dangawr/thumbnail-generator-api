@@ -5,6 +5,7 @@ from .permissions import TempLinkUser
 from rest_framework.response import Response
 from datetime import datetime
 from django.shortcuts import redirect
+from rest_framework.permissions import IsAuthenticated
 
 
 class ImageViewSet(mixins.ListModelMixin,
@@ -13,6 +14,7 @@ class ImageViewSet(mixins.ListModelMixin,
 
     queryset = Image.objects.all()
     serializer_class = serializers.ImageSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
@@ -26,13 +28,14 @@ class BinaryImage(mixins.RetrieveModelMixin,
 
     queryset = Image.objects.all()
     serializer_class = serializers.BinaryImageSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
 
 
 class TempLinkGenerate(views.APIView):
-    permission_classes = [TempLinkUser]
+    permission_classes = [IsAuthenticated, TempLinkUser]
 
     def get(self, request):
         return Response(None)

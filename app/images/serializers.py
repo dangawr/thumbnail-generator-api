@@ -7,7 +7,7 @@ from django.utils import timezone
 
 
 def randomstring(stringlength=20):
-    """Generate a random string of fixed length """
+    """Generate a random string of fixed length for temporary link generation."""
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for i in range(stringlength))
 
@@ -21,6 +21,9 @@ class ImageSerializer(serializers.ModelSerializer):
         extra_kwargs = {'original_image': {'write_only': True}, 'id': {'read_only': True}}
 
     def get_thumbnails(self, obj):
+        """
+        Generating thumbnails based on user's tier sizes.
+        """
         request = self.context['request']
         user_tier_sizes = [str(size.size_px) for size in request.user.tier.sizes.all()]  # List of user's tier sizes
         thumbnailer = get_thumbnailer(obj.original_image)
@@ -31,6 +34,9 @@ class ImageSerializer(serializers.ModelSerializer):
         return thumbnails_response
 
     def get_extra_kwargs(self):
+        """
+        Check if user's tier have original image display.
+        """
         extra_kwargs = super().get_extra_kwargs()
         if self.context['request'].user.tier.original:
             extra_kwargs.pop('original_image')
@@ -47,6 +53,9 @@ class TemporaryLinkSerializer(serializers.ModelSerializer):
         fields = ['seconds_to_expire', 'image_id', 'temp_link']
 
     def validate(self, attrs):
+        """
+        Validates request data.
+        """
         if 300 <= attrs['seconds_to_expire'] <= 30000:
             return attrs
         else:
@@ -55,6 +64,9 @@ class TemporaryLinkSerializer(serializers.ModelSerializer):
             })
 
     def create(self, validated_data):
+        """
+        Creates temporary link.
+        """
         seconds = validated_data.pop('seconds_to_expire')
         image_id = validated_data.pop('image_id')
         expiring_date = timezone.now() + timezone.timedelta(seconds=seconds)
@@ -64,6 +76,9 @@ class TemporaryLinkSerializer(serializers.ModelSerializer):
         return temp_link
 
     def get_temp_link(self, obj):
+        """
+        Method field for temporary link display.
+        """
         the_string = obj.one_time_code
         return self.context['request'].build_absolute_uri(f'/images/binary/{the_string}')
 

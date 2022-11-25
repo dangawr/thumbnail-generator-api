@@ -27,7 +27,7 @@ class TempLinkGenerate(views.APIView):
     permission_classes = [IsAuthenticated, TempLinkUser]
 
     def get(self, request):
-        return Response(None)
+        return Response('Please use post method to create temporary link')
 
     def post(self, request):
         serializer = serializers.TemporaryLinkSerializer(data=request.data, context={'request': request, })

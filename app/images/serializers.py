@@ -4,6 +4,7 @@ from easy_thumbnails.files import get_thumbnailer
 import random
 import string
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def randomstring(stringlength=20):
@@ -71,9 +72,19 @@ class TemporaryLinkSerializer(serializers.ModelSerializer):
         image_id = validated_data.pop('image_id')
         expiring_date = timezone.now() + timezone.timedelta(seconds=seconds)
         the_string = randomstring(stringlength=20)
-        image = Image.objects.get(pk=image_id)
-        temp_link = TemporaryLinkModel.objects.create(expiry_time=expiring_date, one_time_code=the_string, image=image)
-        return temp_link
+        try:
+            image = Image.objects.get(pk=image_id)
+        except ObjectDoesNotExist:
+            raise serializers.ValidationError({'image_id': 'Image does not exists'})
+        if image.user == self.context['request'].user:
+            temp_link = TemporaryLinkModel.objects.create(
+                expiry_time=expiring_date,
+                one_time_code=the_string,
+                image=image
+            )
+            return temp_link
+        else:
+            raise serializers.ValidationError({'image_id': 'Image id is not correct'})
 
     def get_temp_link(self, obj):
         """

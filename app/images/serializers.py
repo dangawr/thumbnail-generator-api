@@ -5,6 +5,7 @@ import base64
 from datetime import datetime, timedelta
 import random
 import string
+from django.utils import timezone
 
 
 def randomstring(stringlength=20):
@@ -69,7 +70,8 @@ class TemporaryLinkSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         seconds = validated_data.pop('seconds_to_expire')
         image_id = validated_data.pop('image_id')
-        expiring_date = datetime.now() + timedelta(seconds=seconds)
+        # expiring_date = datetime.now() + timedelta(seconds=seconds)
+        expiring_date = timezone.now() + timezone.timedelta(seconds=seconds)
         the_string = randomstring(stringlength=20)
         image = Image.objects.get(pk=image_id)
         temp_link = TemporaryLinkModel.objects.create(expiry_time=expiring_date, one_time_code=the_string, image=image)

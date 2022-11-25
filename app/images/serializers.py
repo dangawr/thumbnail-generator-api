@@ -58,6 +58,14 @@ class TemporaryLinkSerializer(serializers.ModelSerializer):
         model = TemporaryLinkModel
         fields = ['seconds_to_expire', 'image_id', 'temp_link']
 
+    def validate(self, attrs):
+        if 300 <= attrs['seconds_to_expire'] <= 30000:
+            return attrs
+        else:
+            raise serializers.ValidationError({
+                'seconds_to_expire': 'Sorry, specify seconds between 300 and 30000.'
+            })
+
     def create(self, validated_data):
         seconds = validated_data.pop('seconds_to_expire')
         image_id = validated_data.pop('image_id')

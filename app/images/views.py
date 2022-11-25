@@ -37,7 +37,7 @@ class TempLinkGenerate(views.APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class BinaryImageValidation(views.APIView):
+class BinaryImage(views.APIView):
 
     def get(self, request, access_code):
         temp_link_obj = TemporaryLinkModel.objects.get(one_time_code=access_code)

@@ -1,18 +1,18 @@
 ## API Paths
 
 ### images/
-**Allowed Methods** : GET, POST
-**Access Level** : Authenticated Users
+<br>**Allowed Methods** : GET, POST
+<br>**Access Level** : Authenticated Users
 
-Endpoint for list and upload images.
+<br>Endpoint for list and upload images.
 
 ### images/get-temp-link/
-**Allowed Methods** : GET, POST
-**Access Level** : Permitted Users (ex. Enterprise Tier Users)
+<br>**Allowed Methods** : GET, POST
+<br>**Access Level** : Permitted Users (ex. Enterprise Tier Users)
 
-Endpoint for create temporary-link to binary image.
+<br>Endpoint for create temporary-link to binary image.
 
-Required data:
+<br>Required data:
 - seconds_to_expire - Seconds to expire temporary link. Please type seconds between 300 - 30000
 - image_id - ID of image 
 

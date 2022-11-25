@@ -1,8 +1,6 @@
 from rest_framework import serializers
 from .models import Image, TemporaryLinkModel
 from easy_thumbnails.files import get_thumbnailer
-import base64
-from datetime import datetime, timedelta
 import random
 import string
 from django.utils import timezone
@@ -39,17 +37,6 @@ class ImageSerializer(serializers.ModelSerializer):
         return extra_kwargs
 
 
-class BinaryImageSerializer(serializers.ModelSerializer):
-    binary_image = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Image
-        fields = ['binary_image', ]
-
-    def get_binary_image(self, obj):
-        return base64.b64encode(obj.original_image.read())
-
-
 class TemporaryLinkSerializer(serializers.ModelSerializer):
     seconds_to_expire = serializers.IntegerField(write_only=True)
     image_id = serializers.IntegerField(write_only=True)
@@ -70,7 +57,6 @@ class TemporaryLinkSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         seconds = validated_data.pop('seconds_to_expire')
         image_id = validated_data.pop('image_id')
-        # expiring_date = datetime.now() + timedelta(seconds=seconds)
         expiring_date = timezone.now() + timezone.timedelta(seconds=seconds)
         the_string = randomstring(stringlength=20)
         image = Image.objects.get(pk=image_id)

@@ -4,18 +4,17 @@
 **Allowed Methods** : GET, POST
 **Access Level** : Authenticated Users
 
-Endpoint for list and upload images
+Endpoint for list and upload images.
 
-### images/
+### images/get-temp-link/
 **Allowed Methods** : GET, POST
-**Access Level** : Authenticated Users
+**Access Level** : Permitted Users (ex. Enterprise Tier Users)
 
-Endpoint for list and upload images
+Endpoint for create temporary-link to binary image.
 
-
-
-
-
+Required data:
+- seconds_to_expire - Seconds to expire temporary link. Please type seconds between 300 - 30000
+- image_id - ID of image 
 
 ## Technologies Used
 - Django

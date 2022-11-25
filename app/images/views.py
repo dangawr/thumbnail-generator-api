@@ -45,7 +45,6 @@ class BinaryImage(views.APIView):
         if expire_date > datetime.now(expire_date.tzinfo):
             image = temp_link_obj.image
             binary_image = base64.b64encode(image.original_image.read())
-
             return Response({'binary_image': binary_image})
         else:
             return Response({'error': 'No images found'})

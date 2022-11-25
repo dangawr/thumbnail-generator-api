@@ -11,5 +11,5 @@ router.register('', views.ImageViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('get-temp-link/', views.TempLinkGenerate.as_view(), name='get-temp-link'),
-    path('binary/<str:access_code>', views.BinaryImage.as_view(), name='binary-validation')
+    path('binary/<str:access_code>', views.BinaryImage.as_view(), name='binary-image')
 ]

@@ -194,7 +194,7 @@ class EnterpriseUser(APITestCase):
         temp_link_res = self.client.post(reverse('images:get-temp-link'), payload)
         self.assertEqual(temp_link_res.status_code, status.HTTP_201_CREATED)  # Checks getting temporary link
 
-        binary_res = self.client.get(temp_link_res.data['temp_link'], follow=True)  # Send request to temporary link
+        binary_res = self.client.get(temp_link_res.data['temp_link'])  # Send request to temporary link
 
         binary_image_source = base64.b64encode(image.original_image.read())
         self.assertEqual(binary_image_source, binary_res.data['binary_image'])  # Check if binary source image is equal to image from response

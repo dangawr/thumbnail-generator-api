@@ -4,8 +4,8 @@ from .models import Image, TemporaryLinkModel
 from .permissions import TempLinkUser
 from rest_framework.response import Response
 from datetime import datetime
-from django.shortcuts import redirect
 from rest_framework.permissions import IsAuthenticated
+import base64
 
 
 class ImageViewSet(mixins.ListModelMixin,
@@ -21,17 +21,6 @@ class ImageViewSet(mixins.ListModelMixin,
 
     def perform_create(self, serializer):
         return serializer.save(user=self.request.user)
-
-
-class BinaryImage(mixins.RetrieveModelMixin,
-                  viewsets.GenericViewSet):
-
-    queryset = Image.objects.all()
-    serializer_class = serializers.BinaryImageSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
 
 
 class TempLinkGenerate(views.APIView):
@@ -55,6 +44,8 @@ class BinaryImageValidation(views.APIView):
         expire_date = temp_link_obj.expiry_time
         if expire_date > datetime.now(expire_date.tzinfo):
             image = temp_link_obj.image
-            return redirect('images:binary-detail', pk=image.pk)
+            binary_image = base64.b64encode(image.original_image.read())
+
+            return Response({'binary_image': binary_image})
         else:
             return Response({'error': 'No images found'})

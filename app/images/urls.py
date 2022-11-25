@@ -7,7 +7,6 @@ app_name = 'images'
 router = DefaultRouter()
 
 router.register('', views.ImageViewSet)
-router.register('binary', views.BinaryImage, basename='binary')
 
 urlpatterns = [
     path('', include(router.urls)),

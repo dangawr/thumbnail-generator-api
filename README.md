@@ -23,7 +23,11 @@ Required data:
 - Postgres
 
 ## How to run:
-- Before first run, you have to add starter pack of tiers (Basic, Premium, Enterprise). To do this please run command:
+- Before first run:
+```
+docker-compose build
+```
+- Then, you have to add starter pack of tiers (Basic, Premium, Enterprise). To do this please run command:
 ```
 docker-compose run --rm app sh -c "python manage.py loaddata tiers.json"
 ```

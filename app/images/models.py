@@ -6,11 +6,11 @@ from django.conf import settings
 
 
 def image_file_path(instance, filename):
-    """Generate file path for new recipe image."""
+    """Generate file path for new image."""
     ext = os.path.splitext(filename)[1]
     filename = f'{uuid.uuid4()}{ext}'
 
-    return os.path.join('uploads', 'originals', filename)
+    return os.path.join('uploads', filename)
 
 
 class Size(models.Model):

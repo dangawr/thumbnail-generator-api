@@ -1,13 +1,17 @@
 ## General information:
 
-This is one of my recruitment task for a company.
+This is the solution to one of my recruitment task.
+
 <br>
-Requirements of that task:
+Requirements of that task was:
 <br>
-- users should be able to upload images via HTTP request
-- users should be able to list their images
+
+Django REST Framework API that allows any user to upload an image in PNG or JPG format:
+
+- users can upload images via HTTP request
+- users can list their images
 - there are three bultin account tiers: Basic, Premium and Enterprise:
-*users that have "Basic" plan after uploading an image get: 
+* users that have "Basic" plan after uploading an image get: 
 - a link to a thumbnail that's 200px in height 
 * users that have "Premium" plan get:
 - a link to a thumbnail that's 200px in height
@@ -18,10 +22,10 @@ Requirements of that task:
 - a link to a thumbnail that's 400px in height
 - a link to the originally uploaded image
 - ability to fetch a link to the (binary) image that expires after a number of seconds (user can specify any number between 300 and 30000)
-- apart from the builtin tiers, admins should be able to create arbitrary tiers with the following things configurable:
-* arbitrary thumbnail sizes
-* presence of the link to the originally uploaded file
-* ability to generate expiring links
+* apart from the builtin tiers, admins can create arbitrary tiers with the following things configurable:
+- arbitrary thumbnail sizes
+- presence of the link to the originally uploaded file
+- ability to generate expiring links
 
 
 

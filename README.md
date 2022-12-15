@@ -1,11 +1,5 @@
 ## General information:
 
-This is the solution to one of my recruitment task.
-
-<br>
-Requirements of that task was:
-<br>
-
 Django REST Framework API that allows any user to upload an image in PNG or JPG format:
 
 - users can upload images via HTTP request

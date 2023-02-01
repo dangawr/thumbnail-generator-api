@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'images',
     'easy_thumbnails',
+    'rest_framework.authtoken',
+    'djoser',
 ]
 
 MIDDLEWARE = [
@@ -139,6 +141,6 @@ AUTH_USER_MODEL = 'images.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ]
 }

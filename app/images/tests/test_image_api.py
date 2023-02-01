@@ -9,6 +9,49 @@ import base64
 from PIL import Image as PIL_Image
 
 
+class UserAuthTestCases(APITestCase):
+
+    def test_register_new_user(self):
+        payload = {
+            'username': 'TestName',
+            'password': 'test-user-password123',
+        }
+        res = self.client.post(reverse('user-list'), payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertIn('username', res.data)
+        self.assertEqual(res.data['username'], payload['username'])
+
+    def test_register_new_user_with_existing_username(self):
+        get_user_model().objects.create_user(username='TestName', password='test-user-password123')
+        payload = {
+            'username': 'TestName',
+            'password': 'test-user-password123',
+        }
+        res = self.client.post(reverse('user-list'), payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('username', res.data)
+        self.assertEqual(res.data['username'][0], 'A user with that username already exists.')
+
+    def test_obtain_token(self):
+        get_user_model().objects.create_user(username='TestName', password='test-user-password123')
+        payload = {
+            'username': 'TestName',
+            'password': 'test-user-password123',
+        }
+        res = self.client.post(reverse('login'), payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('auth_token', res.data)
+
+    def test_obtain_token_with_invalid_credentials(self):
+        get_user_model().objects.create_user(username='TestName', password='test-user-password123')
+        payload = {
+            'username': 'TestName',
+            'password': 'test-user-password1234',
+        }
+        res = self.client.post(reverse('login'), payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+
 class PublicUser(APITestCase):
 
     def test_get_images_unauthorized(self):

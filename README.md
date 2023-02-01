@@ -3,20 +3,25 @@
 Django REST Framework API that allows any user to upload an image in PNG or JPG format:
 
 - users can upload images via HTTP request
-- users can list their images
-- there are three bultin account tiers: Basic, Premium and Enterprise:
-* users that have "Basic" plan after uploading an image get: 
+- users can list their images 
+
+There are three bultin account tiers: Basic, Premium and Enterprise.
+
+Users that have "Basic" plan after uploading an image get: 
 - a link to a thumbnail that's 200px in height 
-* users that have "Premium" plan get:
+
+Users that have "Premium" plan get:
 - a link to a thumbnail that's 200px in height
 - a link to a thumbnail that's 400px in height
 - a link to the originally uploaded image
-* users that have "Enterprise" plan get:
+
+Users that have "Enterprise" plan get:
 - a link to a thumbnail that's 200px in height
 - a link to a thumbnail that's 400px in height
 - a link to the originally uploaded image
 - ability to fetch a link to the (binary) image that expires after a number of seconds (user can specify any number between 300 and 30000)
-* apart from the builtin tiers, admins can create arbitrary tiers with the following things configurable:
+
+Apart from the builtin tiers, admins can create arbitrary tiers with the following things configurable:
 - arbitrary thumbnail sizes
 - presence of the link to the originally uploaded file
 - ability to generate expiring links

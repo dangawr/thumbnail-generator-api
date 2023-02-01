@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Image, TemporaryLinkModel
+from .models import Image, TemporaryLinkModel, Tier
 from easy_thumbnails.files import get_thumbnailer
 import random
 import string
@@ -26,6 +26,8 @@ class ImageSerializer(serializers.ModelSerializer):
         Generating thumbnails based on user's tier sizes.
         """
         request = self.context['request']
+        if not request.user.tier:
+            request.user.tier = Tier.objects.get(name='Basic')
         user_tier_sizes = [str(size.size_px) for size in request.user.tier.sizes.all()]  # List of user's tier sizes
         thumbnailer = get_thumbnailer(obj.original_image)
         thumbnails_response = {}

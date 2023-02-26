@@ -5,6 +5,9 @@ import random
 import string
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
+from PIL import Image as PILImage
+import os
+from django.conf import settings
 
 
 def randomstring(stringlength=20):
@@ -94,5 +97,29 @@ class TemporaryLinkSerializer(serializers.ModelSerializer):
         """
         the_string = obj.one_time_code
         return self.context['request'].build_absolute_uri(f'/images/binary/{the_string}')
+
+
+class BinaryImageSerializer(serializers.Serializer):
+    binary_image = serializers.SerializerMethodField()
+
+    def get_binary_image(self, obj):
+        """
+        Method field for binary image display.
+        """
+
+        filename = obj.image.original_image.name.split('/')[-1]
+        binary_filename = f"binary-{filename}"
+        if os.path.isfile(os.path.join(settings.MEDIA_ROOT, 'uploads', binary_filename)):
+            return self.context['request'].build_absolute_uri(f"{settings.MEDIA_URL}uploads/{binary_filename}")
+        if obj.expiry_time < timezone.now():
+            obj.delete()
+            os.remove(os.path.join(settings.MEDIA_ROOT, 'uploads', binary_filename))
+            raise serializers.ValidationError({'access_code': 'Link expired'})
+        with PILImage.open(obj.image.original_image) as image:
+            gray_image = image.convert('L')
+            binary_image = gray_image.point(lambda x: 0 if x < 128 else 255, '1')
+            path = os.path.join(settings.MEDIA_ROOT, 'uploads', binary_filename)
+            binary_image.save(path)
+        return self.context['request'].build_absolute_uri(f"{settings.MEDIA_URL}uploads/{binary_filename}")
 
 

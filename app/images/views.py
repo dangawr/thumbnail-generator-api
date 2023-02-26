@@ -5,7 +5,6 @@ from .permissions import TempLinkUser
 from rest_framework.response import Response
 from datetime import datetime
 from rest_framework.permissions import IsAuthenticated
-import base64
 
 
 class ImageViewSet(mixins.ListModelMixin,
@@ -40,11 +39,9 @@ class TempLinkGenerate(views.APIView):
 class BinaryImage(views.APIView):
 
     def get(self, request, access_code):
-        temp_link_obj = TemporaryLinkModel.objects.get(one_time_code=access_code)
-        expire_date = temp_link_obj.expiry_time
-        if expire_date > datetime.now(expire_date.tzinfo):
-            image = temp_link_obj.image
-            binary_image = base64.b64encode(image.original_image.read())
-            return Response({'binary_image': binary_image})
-        else:
-            return Response({'error': 'No images found'})
+        try:
+            temp_link_obj = TemporaryLinkModel.objects.get(one_time_code=access_code)
+        except TemporaryLinkModel.DoesNotExist:
+            return Response({'error': 'No images found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = serializers.BinaryImageSerializer(temp_link_obj, context={'request': request, })
+        return Response(serializer.data)

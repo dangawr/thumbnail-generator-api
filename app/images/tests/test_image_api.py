@@ -7,6 +7,9 @@ import tempfile
 from django.core.files import File
 import base64
 from PIL import Image as PIL_Image
+from unittest.mock import patch
+from django.utils import timezone
+from datetime import timedelta
 
 
 class UserAuthTestCases(APITestCase):
@@ -221,10 +224,24 @@ class EnterpriseUser(APITestCase):
         res = self.client.post(reverse('images:get-temp-link'), payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_get_binary_image(self):
-        """
-        Checks getting binary image success
-        """
+
+class BinaryImageTestCase(APITestCase):
+
+    def setUp(self) -> None:
+        user_details = {
+            'username': 'Test Name',
+            'password': 'test-user-password123',
+        }
+        self.user = get_user_model().objects.create_user(**user_details)
+        self.client.force_authenticate(user=self.user)
+
+        tier_details = {
+            'name': 'Test',
+            'original': True,
+            'temporary_link': True
+        }
+        self.tier = Tier.objects.create(**tier_details)
+        self.user.tier = self.tier
         with tempfile.NamedTemporaryFile(suffix='.jpg') as image_file:
             img = PIL_Image.new('RGB', (500, 500))
             img.save(image_file, format='JPEG')
@@ -235,10 +252,31 @@ class EnterpriseUser(APITestCase):
             'image_id': image.id
         }
         temp_link_res = self.client.post(reverse('images:get-temp-link'), payload)
-        self.assertEqual(temp_link_res.status_code, status.HTTP_201_CREATED)  # Checks getting temporary link
+        self.temp_link = temp_link_res.data['temp_link']
 
-        binary_res = self.client.get(temp_link_res.data['temp_link'])  # Send request to temporary link
+    def test_get_binary_image(self):
+        """
+        Checks getting binary image success
+        """
+        binary_image_res = self.client.get(self.temp_link)
+        self.assertEqual(binary_image_res.status_code, status.HTTP_200_OK)
 
-        binary_image_source = base64.b64encode(image.original_image.read())
-        self.assertEqual(binary_image_source, binary_res.data['binary_image'])  # Check if binary source image is equal to image from response
+        binaru_image_url = binary_image_res.data['binary_image']
+        self.assertIn('http://', binaru_image_url)  # Checks if binary image url is valid
+
+    def test_get_binary_image_wrong_link(self):
+        """
+        Checks getting binary image wrong link
+        """
+        binary_image_res = self.client.get(self.temp_link + '1')
+        self.assertEqual(binary_image_res.status_code, status.HTTP_404_NOT_FOUND)
+
+    @patch('django.utils.timezone.now', return_value=timezone.now() + timedelta(seconds=500))
+    @patch('images.serializers.os.remove')
+    def test_get_binary_image_expired_link(self, mock_remove, mock_now):
+        """
+        Checks getting binary image expired link
+        """
+        binary_image_res = self.client.get(self.temp_link)
+        self.assertEqual(binary_image_res.status_code, status.HTTP_400_BAD_REQUEST)
 
